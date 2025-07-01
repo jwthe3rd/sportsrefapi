@@ -21,10 +21,18 @@ def read_team_schedule(league, team_name, year):
 
         print(f'https://www.sports-reference.com/{league}/schools/{team_name}/{year}-schedule.html')
 
-        df = pd.read_html(f'https://www.sports-reference.com/{league}/schools/{team_name}/{year}-schedule.html')[1]
+        df_raw = pd.read_html(f'https://www.sports-reference.com/{league}/schools/{team_name}/{year}-schedule.html')
+        if len(df_raw)>1:
+            df = df_raw[1]
+        else:
+            df = df_raw[0]
         print(df)
     else:
-        df = pd.read_html(f'https://www.sports-reference.com/{league}/schools/{team_name}/{gender}/{year}-schedule.html')[1]
+        df_raw = pd.read_html(f'https://www.sports-reference.com/{league}/schools/{team_name}/{gender}/{year}-schedule.html')
+        if len(df_raw)>1:
+            df = df_raw[1]
+        else:
+            df = df_raw[0]
 
 
     dropped_stats = []
@@ -33,6 +41,8 @@ def read_team_schedule(league, team_name, year):
         if stat not in desired_stats:
             dropped_stats.append(stat)
     
+
+    df = df.rename(columns={'Unnamed: 8': 'Result'})
 
     return df.drop(columns=dropped_stats)
 

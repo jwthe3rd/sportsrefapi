@@ -19,6 +19,9 @@ def get_stats():
 
 
     html_table = df.to_html(classes='table table-striped', index=False)
+    print(html_table)
+
+    return jsonify({'table': html_table})
 
     # Use render_template_string for simplicity (you can use templates if preferred)
     return render_template_string("""
@@ -35,14 +38,14 @@ def get_stats():
     </html>
     """, table=html_table)
 
-    # Simulate response (replace this with your actual logic or API calls)
-    response = {
-        "year": year,
-        "league": league,
-        "team": team,
-    }
-
-    return jsonify(response)
+    ## Simulate response (replace this with your actual logic or API calls)
+    #response = {
+    #    "year": year,
+    #    "league": league,
+    #    "team": team,
+    #}
+#
+#    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
