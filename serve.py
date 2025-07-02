@@ -22,29 +22,6 @@ def get_stats():
 
     return jsonify({'table': html_table})
 
-    # Use render_template_string for simplicity (you can use templates if preferred)
-    return render_template_string("""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Stats Table</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    </head>
-    <body class="p-4">
-        <h2>Team Stats</h2>
-        <div>{{ table | safe }}</div>
-    </body>
-    </html>
-    """, table=html_table)
-
-    ## Simulate response (replace this with your actual logic or API calls)
-    #response = {
-    #    "year": year,
-    #    "league": league,
-    #    "team": team,
-    #}
-#
-#    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
