@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from urllib.error import HTTPError
 
 
 def read_html_to_per_game_df(team_name, year):
@@ -23,7 +24,10 @@ def read_team_schedule(league, team_name, year):
 
         print(f'https://www.sports-reference.com/{league}/schools/{team_name}/{year}-schedule.html')
 
-        df_raw = pd.read_html(f'https://www.sports-reference.com/{league}/schools/{team_name}/{year}-schedule.html')
+        try:
+            df_raw = pd.read_html(f'https://www.sports-reference.com/{league}/schools/{team_name}/{year}-schedule.html')
+        except HTTPError:
+            return pd.DataFrame({"Error":['HTTP error! No data found with the requested information!']})
         if len(df_raw)>1:
             df = df_raw[1]
         else:
@@ -31,7 +35,10 @@ def read_team_schedule(league, team_name, year):
 
         result_added = 1
     else:
-        df_raw = pd.read_html(f'https://www.sports-reference.com/{league}/schools/{team_name}/{gender}/{year}-schedule.html')
+        try:
+            df_raw = pd.read_html(f'https://www.sports-reference.com/{league}/schools/{team_name}/{gender}/{year}-schedule.html')
+        except HTTPError:
+            return pd.DataFrame({"Error":['HTTP error! No data found with the requested information!']})
         if len(df_raw)>1:
             df = df_raw[1]
         else:
@@ -50,7 +57,7 @@ def read_team_schedule(league, team_name, year):
             location_list = [df['Opponent'][i] if isinstance(x, float) else x + ' ' + df['Opponent'][i] for i,x in enumerate(df[stat])]
             location_not_found = False
 
-    df = df.fillna(" ")
+    df = df.fillna("-")
     print(df.keys())
     print(df[df.keys()[0]])
     print(location_list)
@@ -65,6 +72,7 @@ def read_team_schedule(league, team_name, year):
     if league == 'cfb':
 
         df['Rank'] = df['School'].str.extract(r'\((.*?)\)')
+        df['Rank'] = [x if not(isinstance(x, float)) else '-' for x in df['Rank']]
 
     return df.drop(columns=dropped_stats)
 
