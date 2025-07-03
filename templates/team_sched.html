@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block title %}Team Stats{% endblock %}
+
+{% block content %}
+<h2>Team Stats Finder</h2>
+
+<style>
+  .form-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 500px;
+    margin: 0 auto;
+  }
+
+  input[type="text"], select {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.6rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+<div class="form-container">
+  <form id="stats-form">
+    <select id="league" name="league" required>
+      <option value="">-- Select a League --</option>
+      <option value="cfb">College Football</option>
+      <option value="cbb_men">Men's College Basketball</option>
+      <option value="cbb_women">Women's College Basketball</option>
+    </select>
+
+    <input type="text" id="team" name="team" placeholder="Team Name (e.g., Alabama)" required />
+    <input type="text" id="year" name="year" placeholder="Year (i.e. 2023)" required />
+
+    <button type="submit">Get Stats</button>
+  </form>
+
+  <div id="result" style="margin-top: 1rem;"></div>
+</div>
+
+<script>
+  document.getElementById('stats-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const league = document.getElementById('league').value;
+    const team = document.getElementById('team').value;
+    const year = document.getElementById('year').value;
+
+    const response = await fetch('/api/get-stats', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ league, team, year })
+    });
+
+    const data = await response.json();
+
+    document.getElementById('result').innerHTML = `
+      <h3>Stats for ${team} (${league}, ${year})</h3>
+      ${data.table}
+    `;
+  });
+</script>
+{% endblock %}

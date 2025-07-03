@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+
+{% block title %}Individual Stats{% endblock %}
+
+{% block content %}
+<h2>Player Stats Finder</h2>
+
+<style>
+  .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 95%;              /* wider than 500px */
+      max-width: 2000px;       /* optional upper limit */
+      margin: 2rem auto;       /* centers horizontally and gives some top/bottom space */
+  }
+
+  input[type="text"], select {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.6rem;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  .checkbox-group {
+    margin-top: 1rem;
+  }
+
+  .checkbox-group label {
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+</style>
+
+<div class="form-container">
+  <form id="stats-form">
+    <select id="league" name="league" required>
+      <option value="">-- Select a League --</option>
+      <option value="cfb">College Football</option>
+      <option value="cbb_men">Men's College Basketball</option>
+      <option value="cbb_women">Women's College Basketball</option>
+    </select>
+
+    <input type="text" id="name" name="name" placeholder="Name (i.e. John Smith)" required />
+    <input type="text" id="team" name="team" placeholder="Team (e.g. Alabama)" required />
+    <input type="text" id="year" name="year" placeholder="Year (i.e. 2023)" required />
+    <input type="text" id="pos" name="pos" placeholder="Position (i.e. LB)" required />
+
+    <!-- Dynamic checkboxes appear here -->
+    <div class="checkbox-group" id="stat-options"></div>
+
+    <button type="submit">Get Stats</button>
+  </form>
+
+  <div id="result" style="margin-top: 1rem;"></div>
+</div>
+
+<script>
+  const statOptions = {
+    cfb: ['Tackles', 'Sacks', 'Interceptions', 'Passes Defended', 'Forced Fumbles',
+          'Touchdowns', 'Rushing Yards', 'Receiving Yards', 'Passing Yards'
+    ],
+    cbb_men: ['Points', 'Assists', 'Rebounds', 'Steals', 'Blocks'],
+    cbb_women: ['Points', 'Assists', 'Rebounds', 'Steals', 'Blocks']
+  };
+
+  const leagueSelect = document.getElementById('league');
+  const statOptionsContainer = document.getElementById('stat-options');
+
+  leagueSelect.addEventListener('change', () => {
+    const selectedLeague = leagueSelect.value;
+    statOptionsContainer.innerHTML = '';
+
+    if (statOptions[selectedLeague]) {
+      statOptions[selectedLeague].forEach(stat => {
+        const id = `stat-${stat.toLowerCase().replace(/\s+/g, '-')}`;
+        const checkbox = `
+          <label>
+            <input type="checkbox" name="stat" value="${stat}"> ${stat}
+          </label>
+        `;
+        statOptionsContainer.insertAdjacentHTML('beforeend', checkbox);
+      });
+    }
+  });
+
+  document.getElementById('stats-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const league = document.getElementById('league').value;
+  const team = document.getElementById('team').value;
+  const year = document.getElementById('year').value;
+  const name = document.getElementById('name').value;
+  const pos = document.getElementById('pos').value;
+
+  const selectedStats = Array.from(
+    document.querySelectorAll('input[name="stat"]:checked')
+  ).map(el => el.value);
+  const response = await fetch('/api/get-ind-stats', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ league, team, year, name, pos, stats: selectedStats })
+  });
+
+  const data = await response.json();
+
+  let html = `<h3>Stats for ${name} (${pos}, ${team}, ${league}, ${year})</h3>`;
+
+  if (data.tables && data.tables.length > 0) {
+  data.tables.forEach(table => {
+    html += `<h4>${table.title}</h4>${table.html}<br />`;
+  });
+} else {
+  html += '<p>No stats available for the selected options.</p>';
+}
+  document.getElementById('result').innerHTML = html;
+});
+
+</script>
+{% endblock %}
+

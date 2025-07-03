@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from urllib.error import HTTPError
 
+STATS_DICT = {"Yards":""}
+
 
 def read_html_to_per_game_df(team_name, year):
     df = pd.read_html(f'https://www.sports-reference.com/cbb/schools/{team_name}/men/{year}.html#all_roster')
@@ -76,3 +78,24 @@ def read_team_schedule(league, team_name, year):
 
     return df.drop(columns=dropped_stats)
 
+
+def read_ind_stats(league, team_name, year, name, pos, desired_stats):
+    league, _ = return_usable_league(league)
+
+    player_name = name.lower().replace(" ","-")
+
+    for i in range(1,10000):
+        try:
+            print(f'https://www.sports-reference.com/{league}/players/{player_name}-{i}.html')
+            df_raw = pd.read_html(f'https://www.sports-reference.com/{league}/players/{player_name}-{i}.html')
+        except HTTPError:
+            return pd.DataFrame({"Error":['HTTP error! No data found with the requested information!']})
+
+        #print(df_raw[2]['Touchdowns'].keys())
+        print(desired_stats)
+        break
+        
+
+
+
+    return df_raw
