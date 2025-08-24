@@ -42,10 +42,10 @@ def get_ind_stats():
     selected_stats = data.get('stats', [])
     print(team)
 
-    df = read_ind_stats(league, team, year, name, pos, selected_stats)
+    df,players,teams = read_ind_stats(league, team, year, name, pos, selected_stats)
     tables = []
-    for dataf in df:
-        tables.append({'title': 'Stats', 'html': dataf.fillna('-').to_html(index=False, classes="table table-bordered table-striped table-hover", border=0)})
+    for jdx, dataf in enumerate(df):
+        tables.append({'title': f'Stats for {players[jdx]} on {teams[jdx]}', 'html': dataf.fillna('-').to_html(index=False, classes="table table-bordered table-striped table-hover", border=0)})
 
     #js = jsonify({'table': tables})
     #for tab in tables:
