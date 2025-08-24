@@ -55,6 +55,7 @@
       <option value="cfb">College Football</option>
       <option value="cbb_men">Men's College Basketball</option>
       <option value="cbb_women">Women's College Basketball</option>
+      <option value="nfl">Professional Football (NFL)(Fantasy)</option>
     </select>
 
     <input type="text" id="name" name="name" placeholder="Name (i.e. John Smith)" required />
@@ -77,7 +78,11 @@
           'Touchdowns', 'Rushing Yards', 'Receiving Yards', 'Passing Yards'
     ],
     cbb_men: ['Points', 'Assists', 'Rebounds', 'Steals', 'Blocks'],
-    cbb_women: ['Points', 'Assists', 'Rebounds', 'Steals', 'Blocks']
+    cbb_women: ['Points', 'Assists', 'Rebounds', 'Steals', 'Blocks'],
+
+    nfl: ['Tackles', 'Sacks', 'Interceptions', 'Passes Defended', 'Forced Fumbles',
+          'Touchdowns', 'Rushing Yards', 'Receiving Yards', 'Passing Yards'
+    ]
   };
 
   const leagueSelect = document.getElementById('league');

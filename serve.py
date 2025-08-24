@@ -48,8 +48,8 @@ def get_ind_stats():
         tables.append({'title': 'Stats', 'html': dataf.fillna('-').to_html(index=False, classes="table table-bordered table-striped table-hover", border=0)})
 
     #js = jsonify({'table': tables})
-    for tab in tables:
-        print(json.dumps(tab, indent=2))
+    #for tab in tables:
+    #    print(json.dumps(tab, indent=2))
 
 
     #html_table = df.to_html(classes='table table-striped', index=False)

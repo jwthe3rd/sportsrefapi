@@ -84,16 +84,59 @@ def read_ind_stats(league, team_name, year, name, pos, desired_stats):
 
     player_name = name.lower().replace(" ","-")
 
-    for i in range(1,10000):
-        try:
-            print(f'https://www.sports-reference.com/{league}/players/{player_name}-{i}.html')
-            df_raw = pd.read_html(f'https://www.sports-reference.com/{league}/players/{player_name}-{i}.html')
-        except HTTPError:
-            return pd.DataFrame({"Error":['HTTP error! No data found with the requested information!']})
 
-        #print(df_raw[2]['Touchdowns'].keys())
-        print(desired_stats)
-        break
+    for i in range(1,1000):
+        if league=='nfl':
+            try:
+                if i >= 11:
+                    numb = i-1
+                else:
+                    numb = f'0{i-1}'
+                player_name = name.split()
+                print(player_name)
+                link_name = f'https://www.pro-football-reference.com/players/{player_name[1][0]}/{player_name[1][0:4]}{player_name[0][0:2]}{numb}/fantasy/{year}/#player_fantasy'
+                print(link_name)
+                df_raw = pd.read_html(link_name)
+                last_three_keys = df_raw[0].keys()[-3:]
+                df_fant = df_raw[0]['Unnamed: 1_level_0']['Unnamed: 1_level_1']
+                df_fant[df_raw[0]['Unnamed: 2_level_0']['Unnamed: 2_level_1'].keys()[0]] = df_raw[0]['Unnamed: 2_level_0']['Unnamed: 2_level_1'][df_raw[0]['Unnamed: 2_level_0']['Unnamed: 2_level_1'].keys()[0]].values
+                df_fant[df_raw[0]['Unnamed: 3_level_0']['Unnamed: 3_level_1'].keys()[0]] = df_raw[0]['Unnamed: 3_level_0']['Unnamed: 3_level_1'][df_raw[0]['Unnamed: 3_level_0']['Unnamed: 3_level_1'].keys()[0]].values
+                df_fant[df_raw[0]['Unnamed: 4_level_0']['Unnamed: 4_level_1'].keys()[0]] = df_raw[0]['Unnamed: 4_level_0']['Unnamed: 4_level_1'][df_raw[0]['Unnamed: 4_level_0']['Unnamed: 4_level_1'].keys()[0]].values
+                df_fant[df_raw[0]['Unnamed: 5_level_0']['Unnamed: 5_level_1'].keys()[0]] = df_raw[0]['Unnamed: 5_level_0']['Unnamed: 5_level_1'][df_raw[0]['Unnamed: 5_level_0']['Unnamed: 5_level_1'].keys()[0]].values
+                df_fant[df_raw[0]['Unnamed: 6_level_0']['Unnamed: 6_level_1'].keys()[0]] = df_raw[0]['Unnamed: 6_level_0']['Unnamed: 6_level_1'][df_raw[0]['Unnamed: 6_level_0']['Unnamed: 6_level_1'].keys()[0]].values
+                df_fant[df_raw[0]['Unnamed: 7_level_0']['Unnamed: 7_level_1'].keys()[0]] = df_raw[0]['Unnamed: 7_level_0']['Unnamed: 7_level_1'][df_raw[0]['Unnamed: 7_level_0']['Unnamed: 7_level_1'].keys()[0]].values
+                df_fant[df_raw[0][last_three_keys[0][0]]['Fantasy'].keys()[0]] = df_raw[0][last_three_keys[0][0]]['Fantasy'][df_raw[0][last_three_keys[0][0]]['Fantasy'].keys()[0]].values
+                df_fant[df_raw[0][last_three_keys[1][0]]['Fantasy'].keys()[0]] = df_raw[0][last_three_keys[1][0]]['Fantasy'][df_raw[0][last_three_keys[1][0]]['Fantasy'].keys()[0]].values
+                df_fant[df_raw[0][last_three_keys[2][0]]['Fantasy'].keys()[0]] = df_raw[0][last_three_keys[2][0]]['Fantasy'][df_raw[0][last_three_keys[2][0]]['Fantasy'].keys()[0]].values
+
+                df_raw=[df_fant]
+
+                if df_fant['Tm'][0] != team_name:
+                    raise ValueError
+                if df_fant['Pos'][0] != pos:
+                    raise ValueError
+
+                break
+                
+            except HTTPError:
+                return [pd.DataFrame({"Error":['HTTP error! No data found with the requested information!']})]
+            
+            #except KeyError:
+            #    print(last_three_keys[1][0])
+            #    return df_raw
+            except ValueError:
+                continue
+        else:
+
+            try:
+                print(f'https://www.sports-reference.com/{league}/players/{player_name}-{i}.html')
+                df_raw = pd.read_html(f'https://www.sports-reference.com/{league}/players/{player_name}-{i}.html')
+            except HTTPError:
+                return [pd.DataFrame({"Error":['HTTP error! No data found with the requested information!']})]
+
+            #print(df_raw[2]['Touchdowns'].keys())
+            print(desired_stats)
+            break
         
 
 
